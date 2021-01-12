@@ -1,44 +1,41 @@
 import { ComponentInstance } from '../component'
 import vmStateManager from './vmStateManager'
 import { setCurrentInstance, getCurrentVue2Instance } from '../runtimeContext'
-import { Ref, isRef } from '../apis'
+import { isRef } from '../apis'
 import { hasOwn, proxy, warn } from './utils'
 import { createSlotProxy, resolveSlots } from './helper'
 
 export function asVmProperty(
   vm: ComponentInstance,
   propName: string,
-  propValue: Ref<unknown>
+  propValue: any
 ) {
   const props = vm.$options.props
   if (!(propName in vm) && !(props && hasOwn(props, propName))) {
     if (isRef(propValue)) {
       proxy(vm, propName, {
-        get: () => propValue.value,
-        set: (val: unknown) => {
+        get() {
+          return propValue.value
+        },
+        set(val: unknown) {
           propValue.value = val
+        },
+      })
+    } else if (propValue && hasOwn(propValue, '__ob__')) {
+      const ob = propValue.__ob__
+      proxy(vm, propName, {
+        get() {
+          ob.dep.depend()
+          return propValue
+        },
+        set(val: unknown) {
+          ob.dep.notify()
+          propValue = val
         },
       })
     } else {
       // @ts-ignore
       vm[propName] = propValue
-    }
-
-    if (__DEV__) {
-      // expose binding to Vue Devtool as a data property
-      // delay this until state has been resolved to prevent repeated works
-      vm.$nextTick(() => {
-        if (isRef(propValue)) {
-          proxy(vm._data, propName, {
-            get: () => propValue.value,
-            set: (val: unknown) => {
-              propValue.value = val
-            },
-          })
-        } else {
-          vm._data[propName] = propValue
-        }
-      })
     }
   } else if (__DEV__) {
     if (props && hasOwn(props, propName)) {

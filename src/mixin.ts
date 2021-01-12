@@ -5,18 +5,8 @@ import {
   SetupFunction,
   Data,
 } from './component'
-import { isRef, isReactive, toRefs, isRaw } from './reactivity'
-import {
-  isPlainObject,
-  assert,
-  proxy,
-  warn,
-  isFunction,
-  isObject,
-  def,
-  isArray,
-} from './utils'
-import { ref } from './apis'
+import { isReactive, toRefs } from './reactivity'
+import { isPlainObject, assert, proxy, warn, isFunction, def } from './utils'
 import vmStateManager from './utils/vmStateManager'
 import {
   updateTemplateRef,
@@ -24,7 +14,6 @@ import {
   resolveScopedSlots,
   asVmProperty,
 } from './utils/instance'
-import { getVueConstructor } from './runtimeContext'
 import { createObserver, reactive } from './reactivity/reactive'
 
 export function mixin(Vue: VueConstructor) {
@@ -118,21 +107,8 @@ export function mixin(Vue: VueConstructor) {
 
       Object.keys(bindingObj).forEach((name) => {
         let bindingValue: any = bindingObj[name]
-
-        if (!isRef(bindingValue)) {
-          if (!isReactive(bindingValue)) {
-            if (isFunction(bindingValue)) {
-              bindingValue = bindingValue.bind(vm)
-            } else if (!isObject(bindingValue)) {
-              bindingValue = ref(bindingValue)
-            } else if (hasReactiveArrayChild(bindingValue)) {
-              // creates a custom reactive properties without make the object explicitly reactive
-              // NOTE we should try to avoid this, better implementation needed
-              customReactive(bindingValue)
-            }
-          } else if (isArray(bindingValue)) {
-            bindingValue = ref(bindingValue)
-          }
+        if (isFunction(bindingValue)) {
+          bindingValue = bindingValue.bind(vm)
         }
         asVmProperty(vm, name, bindingValue)
       })
@@ -148,45 +124,6 @@ export function mixin(Vue: VueConstructor) {
           .slice(8, -1)}"`
       )
     }
-  }
-
-  function customReactive(target: object) {
-    if (
-      !isPlainObject(target) ||
-      isRef(target) ||
-      isReactive(target) ||
-      isRaw(target)
-    )
-      return
-    const Vue = getVueConstructor()
-    const defineReactive = Vue.util.defineReactive
-
-    Object.keys(target).forEach((k) => {
-      const val = target[k]
-      defineReactive(target, k, val)
-      if (val) {
-        customReactive(val)
-      }
-      return
-    })
-  }
-
-  function hasReactiveArrayChild(target: object, visited = new Map()): boolean {
-    if (visited.has(target)) {
-      return visited.get(target)
-    }
-    visited.set(target, false)
-    if (Array.isArray(target) && isReactive(target)) {
-      visited.set(target, true)
-      return true
-    }
-
-    if (!isPlainObject(target) || isRaw(target)) {
-      return false
-    }
-    return Object.keys(target).some((x) =>
-      hasReactiveArrayChild(target[x], visited)
-    )
   }
 
   function createSetupContext(

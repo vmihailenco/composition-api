@@ -12,7 +12,7 @@ import {
 import { RefKey } from '../utils/symbols'
 import { isRef, UnwrapRef } from './ref'
 import { isRaw } from './reactive'
-import { arrayMethods } from './array'
+import { augmentedArray } from './array'
 
 export let shouldObserve: boolean = true
 
@@ -158,7 +158,7 @@ export function observe(value: any): Observer | void {
   } else if (shouldObserve) {
     ob = new Observer(value)
     if (Array.isArray(value)) {
-      protoAugment(value, arrayMethods)
+      protoAugment(value, augmentedArray)
       observeArray(value)
     } else {
       observeObj(value)

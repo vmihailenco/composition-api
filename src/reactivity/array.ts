@@ -1,9 +1,9 @@
 import { def } from '../utils'
 
 const arrayProto: any = Array.prototype
-export const arrayMethods = Object.create(arrayProto)
+export const augmentedArray = Object.create(arrayProto)
 
-const methodsToPatch = [
+const arrayMethods = [
   'push',
   'pop',
   'shift',
@@ -16,10 +16,10 @@ const methodsToPatch = [
 /**
  * Intercept mutating methods and emit events
  */
-methodsToPatch.forEach(function (method) {
+arrayMethods.forEach((method) => {
   // cache original method
   const original: any = arrayProto[method]
-  def(arrayMethods, method, function mutator(this: any, ...args: any[]) {
+  def(augmentedArray, method, function mutator(this: any, ...args: any[]) {
     const result = original.apply(this, args)
     const ob = this.__ob__
     let inserted

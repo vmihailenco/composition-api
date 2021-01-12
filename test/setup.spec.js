@@ -603,15 +603,15 @@ describe('setup', () => {
         },
         template: `<div>
           <p id="nested">{{nested.a}}</p>
-  
+
           <p id="nested_aa_b">{{ nested.aa.b }}</p>
           <p id="nested_aa_bb_c">{{ nested.aa.bb.c }}</p>
           <p id="nested_aa_bb_cc">{{ nested.aa.bb.cc }}</p>
-  
+
           <p id="nested_aaa_b">{{ nested.aaa.b }}</p>
           <p id="nested_aaa_bb_c">{{ nested.aaa.bb.c }}</p>
           <p id="nested_aaa_bb_cc">{{ nested.aaa.bb.cc }}</p>
-  
+
           <p id="nested_aaaa_b">{{ nested.aaaa.b }}</p>
           <p id="nested_aaaa_bb_c">{{ nested.aaaa.bb }}</p>
           <p id="nested_aaaa_bbb_cc">{{ nested.aaaa.bbb.c }}</p>
@@ -672,7 +672,7 @@ describe('setup', () => {
           <p id="recursive_b_recursive_a">{{recursive.a.b.recursive.a.a}}</p>
           <p id="recursive_b_recursive_c">{{recursive.a.b.recursive.a.b.c}}</p>
           <p id="recursive_b_recursive_r">{{recursive.a.b.recursive.a.b.r}}</p>
-          
+
           <p id="recursive_b_recursive_recursive_c">{{recursive.a.b.recursive.a.b.recursive.a.b.c}}</p>
           <p id="recursive_b_recursive_recursive_r">{{recursive.a.b.recursive.a.b.recursive.a.b.r}}</p>
         </div>`,
@@ -932,9 +932,9 @@ describe('setup', () => {
         }, 1)
 
         return {
-          a: {
+          a: reactive({
             items,
-          },
+          }),
         }
       },
     }
@@ -958,9 +958,9 @@ describe('setup', () => {
         }, 1)
 
         return {
-          a: {
+          a: reactive({
             items,
-          },
+          }),
         }
       },
     }
@@ -1036,12 +1036,12 @@ describe('setup', () => {
 
         template: `  <div>
       <A :pattern="/./"/>
-  
+
       <div
         v-for="(k, v) in o.v"
         :key="v"
       >{{v}}</div>
-  
+
       <B @ev="(v) => { o = v; }"/>
     </div>`,
         setup(props, { emit }) {

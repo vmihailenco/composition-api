@@ -43,7 +43,7 @@ describe('ref', () => {
         })
 
         return {
-          value: 'bar',
+          value: ref('bar'),
           bar: ref1,
           foo: ref2,
         }

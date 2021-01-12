@@ -357,7 +357,7 @@ describe('unwrapping', () => {
     expect(unref({ value: 1 })).toStrictEqual({ value: 1 })
   })
 
-  it('should now unwrap plain object when using set at Array', () => {
+  it('should unwrap plain object when using set at Array', () => {
     const state = reactive({
       list: [],
     })
@@ -375,7 +375,7 @@ describe('unwrapping', () => {
     set(state.list, 0, {
       count: a,
     })
-    expect(dummy).toBe(a)
+    expect(dummy).toBe(a.value)
   })
 
   it('should not call the computed property until accessing it', () => {

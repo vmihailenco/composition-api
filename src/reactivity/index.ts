@@ -1,11 +1,5 @@
-export {
-  reactive,
-  isReactive,
-  markRaw,
-  shallowReactive,
-  toRaw,
-  isRaw,
-} from './reactive'
+export { isReactive, markRaw, toRaw, isRaw } from './reactive'
+export { shallowReactive, reactive, set } from './xreactive'
 export {
   ref,
   customRef,
@@ -18,9 +12,8 @@ export {
   unref,
   shallowRef,
   triggerRef,
-  proxyRefs,
   ShallowUnwrapRef,
 } from './ref'
+export { proxyRefs } from './proxy-refs'
 export { readonly, isReadonly, shallowReadonly, DeepReadonly } from './readonly'
-export { set } from './set'
 export { del } from './del'
